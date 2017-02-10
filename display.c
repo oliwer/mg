@@ -17,6 +17,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _AIX
+#include <curses.h>
+#endif
 #include <term.h>
 
 #include "def.h"

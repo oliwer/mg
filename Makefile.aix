@@ -1,0 +1,60 @@
+# Mg Makefile for AIX
+# This file was written by Olivier Duclos <odc@fastmail.com>
+# and released into the Public Domain.
+
+PROG = mg
+
+PREFIX = /usr/local
+MANDIR = ${PREFIX}/man
+DOCDIR = ${PREFIX}/share/doc/mg
+INSTALL = /usr/bin/installbsd
+
+
+# CFLAGS:
+# -DREGEX	-- Enable regex search commands
+# -DSTARTUPFILE	-- Look for and handle initialization file
+CFLAGS = -O2 
+CFLAGS += -DREGEX -DSTARTUPFILE
+
+LIBS = -lcurses
+
+OBJS = autoexec.o basic.o bell.o buffer.o cinfo.o dir.o display.o \
+	echo.o extend.o file.o fileio.o funmap.o help.o kbd.o keymap.o \
+	line.o macro.o main.o match.o modes.o paragraph.o re_search.o \
+	region.o search.o spawn.o tty.o ttyio.o ttykbd.o undo.o util.o \
+	version.o window.o word.o yank.o
+
+#
+# More or less standalone extensions.
+#
+OBJS +=	cmode.o cscope.o dired.o grep.o tags.o
+
+#
+# AIX Specific
+#
+CFLAGS += -qlanglvl=extc99 -Iportable/aix 
+OBJS += reallocarray.o fgetln.o fparseln.o strlcat.o err.o \
+        strlcpy.o strtonum.o asprintf.o
+
+all: ${PROG}
+
+${PROG}: ${OBJS}
+	${CC} -o $@ ${OBJS} ${LIBS}
+
+clean:
+	rm -f ${PROG} ${OBJS}
+
+install: all
+	mkdir -p -m 775 ${DESTDIR}${PREFIX}/bin
+	mkdir -p -m 755 ${DESTDIR}${MANDIR}/man1
+	mkdir -p -m 755 ${DESTDIR}${DOCDIR}
+	${INSTALL} -c -s -m 555 ${PROG} ${DESTDIR}${PREFIX}/bin
+	${INSTALL} -c -m 444 mg.1 ${DESTDIR}${MANDIR}/man1
+	${INSTALL} -c -m 444 README.md ${DESTDIR}${DOCDIR}
+	${INSTALL} -c -m 444 README-Mg ${DESTDIR}${DOCDIR}
+	${INSTALL} -c -m 444 tutorial ${DESTDIR}${DOCDIR}
+
+uninstall:
+	rm -f ${DESTDIR}${PREFIX}/bin/${PROG} \
+		${DESTDIR}${MANDIR}/man1/${PROG}.1
+	rm -rf ${DESTDIR}${DOCDIR}

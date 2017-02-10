@@ -33,6 +33,9 @@
 #include <sys/time.h>
 #include <signal.h>
 #include <stdio.h>
+#ifdef _AIX
+#include <curses.h>
+#endif
 #include <term.h>
 
 #include "def.h"

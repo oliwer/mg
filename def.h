@@ -29,6 +29,9 @@
 #ifdef __DragonFly__
 #include "portable/dragonfly/dragonfly.h"
 #endif
+#ifdef _AIX
+#include "portable/aix/aix.h"
+#endif
 
 #include	"chrdef.h"
 

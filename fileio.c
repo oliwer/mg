@@ -67,7 +67,12 @@ ffstat(FILE *ffp, struct buffer *bp)
 		bp->b_fi.fi_mode = sb.st_mode | 0x8000;
 		bp->b_fi.fi_uid = sb.st_uid;
 		bp->b_fi.fi_gid = sb.st_gid;
+#ifdef _AIX
+		bp->b_fi.fi_mtime.tv_sec = sb.st_mtime;
+		bp->b_fi.fi_mtime.tv_nsec = 0;
+#else
 		bp->b_fi.fi_mtime = sb.st_mtimespec;
+#endif
 		/* Clear the ignore flag */
 		bp->b_flag &= ~(BFIGNDIRTY | BFDIRTY);
 	}
@@ -268,10 +273,17 @@ fbackupfile(const char *fn)
 	(void) fchmod(to, (sb.st_mode & 0777));
 
 	/* copy the mtime to the backupfile */
+#ifdef _AIX
+	struct utimbuf new_times;
+	new_times.actime = sb.st_atime;
+	new_times.modtime = sb.st_mtime;
+	utime(tname, &new_times);
+#else
 	struct timespec new_times[2];
 	new_times[0] = sb.st_atim;
 	new_times[1] = sb.st_mtim;
 	futimens(to, new_times);
+#endif
 
 	close(from);
 	close(to);
@@ -521,6 +533,24 @@ make_file_list(char *buf)
 		if (strncmp(cp, dent->d_name, len) != 0)
 			continue;
 		isdir = 0;
+#ifdef _AIX
+		char *fullname;
+		struct stat statbuf;
+		if (asprintf(&fullname, "%s/%s", dir, dent->d_name) == -1) {
+			free_file_list(last);
+			closedir(dirp);
+			return (NULL);
+		}
+
+		if (stat(fullname, &statbuf) == -1) {
+			free(fullname);
+			continue;
+		}
+		free(fullname);
+
+		if (S_ISDIR(statbuf.st_mode))
+			isdir = 1;
+#else
 		if (dent->d_type == DT_DIR) {
 			isdir = 1;
 		} else if (dent->d_type == DT_LNK ||
@@ -532,7 +562,7 @@ make_file_list(char *buf)
 			if (S_ISDIR(statbuf.st_mode))
 				isdir = 1;
 		}
-
+#endif
 		if ((current = malloc(sizeof(struct list))) == NULL) {
 			free_file_list(last);
 			closedir(dirp);
@@ -584,8 +614,12 @@ fchecktime(struct buffer *bp)
 	if (stat(bp->b_fname, &sb) == -1)
 		return (TRUE);
 
+#ifdef _AIX
+	if (bp->b_fi.fi_mtime.tv_sec != sb.st_mtime)
+#else
 	if (bp->b_fi.fi_mtime.tv_sec != sb.st_mtimespec.tv_sec ||
 	    bp->b_fi.fi_mtime.tv_nsec != sb.st_mtimespec.tv_nsec)
+#endif
 		return (FALSE);
 
 	return (TRUE);

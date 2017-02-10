@@ -37,7 +37,9 @@ char		 pat[NPAT];			/* pattern		*/
 static void	 edinit(struct buffer *);
 static __dead void usage(void);
 
+#ifndef _AIX
 extern char	*__progname;
+#endif
 extern void     closetags(void);
 
 static __dead void
