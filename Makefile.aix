@@ -32,9 +32,14 @@ OBJS +=	cmode.o cscope.o dired.o grep.o tags.o
 #
 # AIX Specific
 #
-CFLAGS += -qlanglvl=extc99 -Iportable/aix 
-OBJS += reallocarray.o fgetln.o fparseln.o strlcat.o err.o \
-        strlcpy.o strtonum.o asprintf.o
+CFLAGS += -qlanglvl=extc99 -Iportable/aix
+OBJS += portable/common/reallocarray.o portable/linux/fgetln.o portable/common/fparseln.o \
+        portable/linux/strlcat.o portable/linux/strlcpy.o \
+        portable/common/strtonum.o portable/aix/bsd-asprintf.o
+
+# Overwrite the default rule to use the right output path
+.c.o:
+	${CC} ${CFLAGS} -c -o $@ $<
 
 all: ${PROG}
 

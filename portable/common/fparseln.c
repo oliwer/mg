@@ -36,6 +36,8 @@
 
 #ifdef __APPLE__
 #include "../apple/apple.h"
+#elif _AIX
+#include "../aix/libutil.h"
 #else
 #include "../linux/util.h"
 #endif

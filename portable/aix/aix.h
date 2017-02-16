@@ -12,6 +12,7 @@
 #define TCSASOFT        0
 #define __progname      "mg"
 
+
 /* Functions */
 void	       *reallocarray(void *, size_t, size_t);
 char	       *fgetln(FILE *, size_t *);
