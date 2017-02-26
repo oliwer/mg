@@ -41,7 +41,7 @@ OBJS += portable/common/reallocarray.o portable/linux/fgetln.o portable/common/f
 .c.o:
 	${CC} ${CFLAGS} -c -o $@ $<
 
-all: ${PROG}
+all: ${PROG} mg.man.1
 
 ${PROG}: ${OBJS}
 	${CC} -o $@ ${OBJS} ${LIBS}
@@ -49,12 +49,15 @@ ${PROG}: ${OBJS}
 clean:
 	rm -f ${PROG} ${OBJS}
 
+mg.man.1: mg.1
+	mandoc -mdoc -T man -I os=AIX $< > $@
+
 install: all
 	mkdir -p -m 775 ${DESTDIR}${PREFIX}/bin
 	mkdir -p -m 755 ${DESTDIR}${MANDIR}/man1
 	mkdir -p -m 755 ${DESTDIR}${DOCDIR}
 	${INSTALL} -c -s -m 555 ${PROG} ${DESTDIR}${PREFIX}/bin
-	${INSTALL} -c -m 444 mg.1 ${DESTDIR}${MANDIR}/man1
+	${INSTALL} -c -m 444 mg.man.1 ${DESTDIR}${MANDIR}/man1
 	${INSTALL} -c -m 444 README.md ${DESTDIR}${DOCDIR}
 	${INSTALL} -c -m 444 README-Mg ${DESTDIR}${DOCDIR}
 	${INSTALL} -c -m 444 tutorial ${DESTDIR}${DOCDIR}

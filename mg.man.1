@@ -1,0 +1,1411 @@
+.TH "MG" "1" "July 28, 2016" "AIX" "General Commands Manual"
+.nh
+.if n .ad l
+.SH "NAME"
+\fBmg\fR
+\- emacs-like text editor
+.SH "SYNOPSIS"
+.HP 3n
+\fBmg\fR
+[\fB\-nR\fR]
+[\fB\-f\fR\ \fImode\fR]
+[+\fInumber\fR]
+[\fIfile\ ...\fR]
+.SH "DESCRIPTION"
+\fBmg\fR
+is intended to be a small, fast, and portable editor for
+people who can't (or don't want to) run emacs for one
+reason or another, or are not familiar with the
+vi(1)
+editor.
+It is compatible with emacs because there shouldn't
+be any reason to learn more editor types than emacs or
+vi(1).
+.PP
+The options are as follows:
+.TP 8n
++\fInumber\fR
+.br
+Go to the line specified by number (do not insert
+a space between the
+\(oq+\(cq
+sign and the number).
+If a negative number is specified, the line number counts
+backwards from the end of the file i.e. +-1 will be the last
+line of the file, +-2 will be second last, and so on.
+.TP 8n
+\fB\-f\fR \fImode\fR
+Run the mode command for all buffers created from
+arguments on the command line, including the
+scratch buffer and all files.
+.TP 8n
+\fB\-n\fR
+Turn off backup file generation.
+.TP 8n
+\fB\-R\fR
+Files specified on the command line will be opened read-only.
+.SH "WINDOWS AND BUFFERS"
+When a file is loaded into
+\fBmg\fR,
+it is stored in a
+\fIbuffer\fR.
+This buffer may be displayed on the screen in more than one window.
+At present, windows may only be split horizontally, so each window is
+delineated by a modeline at the bottom.
+If changes are made to a buffer, it will be reflected in all open windows.
+.PP
+If a file is changed outside
+\fBmg\fR
+and its buffer is about to be changed,
+\fBmg\fR
+prompts if the change should go ahead (y), not go ahead (n) or if the buffer
+should be reverted (r) to the latest file on disk.
+.PP
+If a buffer name begins and ends with an asterisk, the buffer is considered
+throwaway; i.e. the user will not be prompted to save changes when
+the buffer is killed.
+.SH "POINT AND MARK"
+The current cursor location in
+\fBmg\fR
+is called the
+\fIpoint\fR
+(or
+\fIdot\fR).
+It is possible to define a window-specific region of text by setting a second
+location, called the
+\fImark\fR.
+The
+\fIregion\fR
+is the text between point and mark inclusive.
+Deleting the character at the mark position leaves
+the mark at the point of deletion.
+.PP
+Note: The point and mark are window-specific in
+\fBmg\fR,
+not buffer-specific, as in other emacs flavours.
+.SH "BACKUP FILES"
+Backup files have a
+\(oq~\(cq
+character appended to the file name and
+are created in the current working directory by default.
+Whether to create backup files or not can be toggled with the
+make-backup-files command.
+The backup file location can either be in the current
+working directory, or all backups can be moved to a
+\fI~/.mg.d\fR
+directory where files retain their path name to retain uniqueness.
+Use the backup-to-home-directory to alternate between these two locations.
+Further, if any application creates backup files in
+\fI/tmp\fR,
+these can be left with the leave-tmpdir-backups command.
+.SH "TAGS"
+\fBmg\fR
+supports tag files created by
+ctags(1),
+allowing the user to quickly locate various object definitions.
+Note though that emacs uses etags, not ctags.
+.SH "CSCOPE"
+\fBmg\fR
+supports navigating source code using cscope.
+However,
+\fBmg\fR
+requires cscope and cscope-indexer executables to be present in
+\fRPATH\fR
+for it to work.
+.SH "DEFAULT KEY BINDINGS"
+Normal editing commands are very similar to GNU Emacs.
+In the following examples, C-x means Control-x, and M-x means Meta-x,
+where the Meta key may be either a special key on the keyboard
+or the ALT key; otherwise ESC followed by the key X works as well.
+.PP
+.RS 6n
+.PD 0
+.TP 14n
+C-SPC
+set-mark-command
+.TP 14n
+C-a
+beginning-of-line
+.TP 14n
+C-b
+backward-char
+.TP 14n
+C-c s c
+cscope-find-functions-calling-this-function
+.TP 14n
+C-c s d
+cscope-find-global-definition
+.TP 14n
+C-c s e
+cscope-find-egrep-pattern
+.TP 14n
+C-c s f
+cscope-find-this-file
+.TP 14n
+C-c s i
+cscope-find-files-including-file
+.TP 14n
+C-c s n
+cscope-next-symbol
+.TP 14n
+C-c s p
+cscope-prev-symbol
+.TP 14n
+C-c s s
+cscope-find-this-symbol
+.TP 14n
+C-c s t
+cscope-find-this-text-string
+.TP 14n
+C-d
+delete-char
+.TP 14n
+C-e
+end-of-line
+.TP 14n
+C-f
+forward-char
+.TP 14n
+C-g
+keyboard-quit
+.TP 14n
+C-h C-h
+help-help
+.TP 14n
+C-h a
+apropos
+.TP 14n
+C-h b
+describe-bindings
+.TP 14n
+C-h c
+describe-key-briefly
+.TP 14n
+C-j
+newline-and-indent
+.TP 14n
+C-k
+kill-line
+.TP 14n
+C-l
+recenter
+.TP 14n
+RET
+newline
+.TP 14n
+C-n
+next-line
+.TP 14n
+C-o
+open-line
+.TP 14n
+C-p
+previous-line
+.TP 14n
+C-q
+quoted-insert
+.TP 14n
+C-r
+isearch-backward
+.TP 14n
+C-s
+isearch-forward
+.TP 14n
+C-t
+transpose-chars
+.TP 14n
+C-u
+universal-argument
+.TP 14n
+C-v
+scroll-up
+.TP 14n
+C-w
+kill-region
+.TP 14n
+C-x C-b
+list-buffers
+.TP 14n
+C-x C-c
+save-buffers-kill-emacs
+.TP 14n
+C-x C-f
+find-file
+.TP 14n
+C-x C-g
+keyboard-quit
+.TP 14n
+C-x C-l
+downcase-region
+.TP 14n
+C-x C-o
+delete-blank-lines
+.TP 14n
+C-x C-q
+toggle-read-only
+.TP 14n
+C-x C-r
+find-file-read-only
+.TP 14n
+C-x C-s
+save-buffer
+.TP 14n
+C-x C-u
+upcase-region
+.TP 14n
+C-x C-v
+find-alternate-file
+.TP 14n
+C-x C-w
+write-file
+.TP 14n
+C-x C-x
+exchange-point-and-mark
+.TP 14n
+C-x (
+start-kbd-macro
+.TP 14n
+C-x \&)
+end-kbd-macro
+.TP 14n
+C-x 0
+delete-window
+.TP 14n
+C-x 1
+delete-other-windows
+.TP 14n
+C-x 2
+split-window-vertically
+.TP 14n
+C-x 4 C-f
+find-file-other-window
+.TP 14n
+C-x 4 C-g
+keyboard-quit
+.TP 14n
+C-x 4 b
+switch-to-buffer-other-window
+.TP 14n
+C-x 4 f
+find-file-other-window
+.TP 14n
+C-x =
+what-cursor-position
+.TP 14n
+C-x ^
+enlarge-window
+.TP 14n
+C-x `
+next-error
+.TP 14n
+C-x b
+switch-to-buffer
+.TP 14n
+C-x d
+dired
+.TP 14n
+C-x e
+call-last-kbd-macro
+.TP 14n
+C-x f
+set-fill-column
+.TP 14n
+C-x g
+goto-line
+.TP 14n
+C-x h
+mark-whole-buffer
+.TP 14n
+C-x i
+insert-file
+.TP 14n
+C-x k
+kill-buffer
+.TP 14n
+C-x n
+other-window
+.TP 14n
+C-x o
+other-window
+.TP 14n
+C-x p
+previous-window
+.TP 14n
+C-x s
+save-some-buffers
+.TP 14n
+C-x u
+undo
+.TP 14n
+C-y
+yank
+.TP 14n
+C-z
+suspend-emacs
+.TP 14n
+M-C-v
+scroll-other-window
+.TP 14n
+M-SPC
+just-one-space
+.TP 14n
+M-!
+shell-command
+.TP 14n
+M-.
+find-tag
+.TP 14n
+M-*
+pop-tag-mark
+.TP 14n
+M-%
+query-replace
+.TP 14n
+M-<
+beginning-of-buffer
+.TP 14n
+M->
+end-of-buffer
+.TP 14n
+M-\e
+delete-horizontal-space
+.TP 14n
+M-^
+join-line
+.TP 14n
+M-b
+backward-word
+.TP 14n
+M-c
+capitalize-word
+.TP 14n
+M-d
+kill-word
+.TP 14n
+M-f
+forward-word
+.TP 14n
+M-h
+mark-paragraph
+.TP 14n
+M-l
+downcase-word
+.TP 14n
+M-m
+back-to-indentation
+.TP 14n
+M-q
+fill-paragraph
+.TP 14n
+M-r
+search-backward
+.TP 14n
+M-s
+search-forward
+.TP 14n
+M-t
+transpose-words
+.TP 14n
+M-u
+upcase-word
+.TP 14n
+M-v
+scroll-down
+.TP 14n
+M-w
+copy-region-as-kill
+.TP 14n
+M-x
+execute-extended-command
+.TP 14n
+M-{
+backward-paragraph
+.TP 14n
+M-|
+shell-command-on-region
+.TP 14n
+M-}
+forward-paragraph
+.TP 14n
+M-~
+not-modified
+.TP 14n
+M-DEL
+backward-kill-word
+.TP 14n
+C-_
+undo
+.TP 14n
+)
+blink-and-insert
+.TP 14n
+DEL
+delete-backward-char
+.RE
+.PD
+.PP
+For a complete description of
+\fBmg\fR
+commands, see
+\fIMG COMMANDS\fR.
+To see the active keybindings at any time, type
+\(LqM-x describe-bindings\(Rq.
+.SH "MG COMMANDS"
+Commands are invoked by
+\(LqM-x\(Rq,
+or by binding to a key.
+Many commands take an optional numerical parameter,
+\fIn\fR.
+This parameter is set either by
+M-<n> (where
+\fIn\fR
+is the numerical argument) before the command, or by
+one or more invocations of the universal argument, usually bound to C-u.
+When invoked in this manner, the value of the numeric parameter to
+be passed is displayed in the minibuffer before the M-x.
+One common use of the parameter is in mode toggles (e.g.\&
+make-backup-files).
+If no parameter is supplied, the mode is toggled to its
+alternate state.
+If a positive parameter is supplied, the mode is forced to on.
+Otherwise, it is forced to off.
+.TP 7n
+apropos
+Help Apropos.
+Prompt the user for a string, open the *help* buffer,
+and list all
+\fBmg\fR
+commands that contain that string.
+.TP 7n
+audible-bell
+Toggle the audible system bell.
+.TP 7n
+auto-execute
+Register an auto-execute hook; that is, specify a filename pattern
+(conforming to the shell's filename globbing rules) and an associated
+function to execute when a file matching the specified pattern
+is read into a buffer.
+.TP 7n
+auto-fill-mode
+Toggle auto-fill mode (sometimes called mail-mode) in the current buffer,
+where text inserted past the fill column is automatically wrapped
+to a new line.
+Can be set globally with set-default-mode.
+.TP 7n
+auto-indent-mode
+Toggle indent mode in the current buffer,
+where indentation is preserved after a newline.
+Can be set globally with set-default-mode.
+.TP 7n
+back-to-indentation
+Move the dot to the first non-whitespace character on the current line.
+.TP 7n
+backup-to-home-directory
+Save backup copies to a
+\fI~/.mg.d\fR
+directory instead of working directory.
+Requires make-backup-files to be on.
+.TP 7n
+backward-char
+Move cursor backwards one character.
+.TP 7n
+backward-kill-word
+Kill text backwards by
+\fIn\fR
+words.
+.TP 7n
+backward-paragraph
+Move cursor backwards
+\fIn\fR
+paragraphs.
+Paragraphs are delimited by <NL><NL> or <NL><TAB> or <NL><SPACE>.
+.TP 7n
+backward-word
+Move cursor backwards by the specified number of words.
+.TP 7n
+beginning-of-buffer
+Move cursor to the top of the buffer.
+.TP 7n
+beginning-of-line
+Move cursor to the beginning of the line.
+.TP 7n
+blink-and-insert
+Self-insert a character, then search backwards and blink its
+matching delimiter.
+For delimiters other than
+parenthesis, brackets, and braces, the character itself
+is used as its own match.
+.TP 7n
+bsmap-mode
+Toggle bsmap mode, where DEL and C-h are swapped.
+.TP 7n
+c-mode
+.br
+Toggle a KNF-compliant mode for editing C program files.
+.TP 7n
+call-last-kbd-macro
+Invoke the keyboard macro.
+.TP 7n
+capitalize-word
+Capitalize
+\fIn\fR
+words; i.e. convert the first character of the word to
+upper case, and subsequent letters to lower case.
+.TP 7n
+cd
+Change the global working directory.
+See also global-wd-mode.
+.TP 7n
+column-number-mode
+Toggle whether the column number is displayed in the modeline.
+.TP 7n
+copy-region-as-kill
+Copy all of the characters in the region to the kill buffer,
+clearing the mark afterwards.
+This is a bit like a kill-region followed by a yank.
+.TP 7n
+count-matches
+Count the number of lines matching the supplied regular expression.
+.TP 7n
+count-non-matches
+Count the number of lines not matching the supplied regular expression.
+.TP 7n
+cscope-find-this-symbol
+List the matches for the given symbol.
+.TP 7n
+cscope-find-global-definition
+List global definitions for the given literal.
+.TP 7n
+cscope-find-called-functions
+List functions called from the given function.
+.TP 7n
+cscope-find-functions-calling-this-function
+List functions calling the given function.
+.TP 7n
+cscope-find-this-text-string
+List locations matching the given text string.
+.TP 7n
+cscope-find-egrep-pattern
+List locations matching the given extended regular expression pattern.
+.TP 7n
+cscope-find-this-file
+List filenames matching the given filename.
+.TP 7n
+cscope-find-files-including-file
+List files that #include the given filename.
+.TP 7n
+cscope-next-symbol
+Navigate to the next match.
+.TP 7n
+cscope-prev-symbol
+Navigate to the previous match.
+.TP 7n
+cscope-next-file
+Navigate to the next file.
+.TP 7n
+cscope-prev-file
+Navigate to the previous file.
+.TP 7n
+cscope-create-list-of-files-to-index
+Create cscope's List and Index in the given directory.
+.TP 7n
+define-key
+Prompts the user for a named keymap (mode),
+a key, and an
+\fBmg\fR
+command, then creates a keybinding in the appropriate
+map.
+.TP 7n
+delete-backward-char
+Delete backwards
+\fIn\fR
+characters.
+Like delete-char, this actually does a kill if presented
+with an argument.
+.TP 7n
+delete-blank-lines
+Delete blank lines around dot.
+If dot is sitting on a blank line, this command
+deletes all the blank lines above and below the current line.
+Otherwise, it deletes all of the blank lines after the current line.
+.TP 7n
+delete-char
+Delete
+\fIn\fR
+characters forward.
+If any argument is present, it kills rather than deletes,
+saving the result in the kill buffer.
+.TP 7n
+delete-horizontal-space
+Delete any whitespace around the dot.
+.TP 7n
+delete-leading-space
+Delete leading whitespace on the current line.
+.TP 7n
+delete-trailing-space
+Delete trailing whitespace on the current line.
+.TP 7n
+delete-matching-lines
+Delete all lines after dot that contain a string matching
+the supplied regular expression.
+.TP 7n
+delete-non-matching-lines
+Delete all lines after dot that contain a string matching
+the supplied regular expression.
+.TP 7n
+delete-other-windows
+Make the current window the only window visible on the screen.
+.TP 7n
+delete-window
+Delete current window.
+.TP 7n
+describe-bindings
+List all global and local keybindings, putting the result in
+the *help* buffer.
+.TP 7n
+describe-key-briefly
+Read a key from the keyboard, and look it up in the keymap.
+Display the name of the function currently bound to the key.
+.TP 7n
+diff-buffer-with-file
+View the differences between buffer and its associated file.
+.TP 7n
+digit-argument
+Process a numerical argument for keyboard-invoked functions.
+.TP 7n
+downcase-region
+Set all characters in the region to lower case.
+.TP 7n
+downcase-word
+Set characters to lower case, starting at the dot, and ending
+\fIn\fR
+words away.
+.TP 7n
+emacs-version
+Return an
+\fBmg\fR
+version string.
+.TP 7n
+end-kbd-macro
+Stop defining a keyboard macro.
+.TP 7n
+end-of-buffer
+Move cursor to the end of the buffer.
+.TP 7n
+end-of-line
+Move cursor to the end of the line.
+.TP 7n
+enlarge-window
+Enlarge the current window by shrinking either the window above
+or below it.
+.TP 7n
+eval-current-buffer
+Evaluate the current buffer as a series of
+\fBmg\fR
+commands.
+Useful for testing
+\fBmg\fR
+startup files.
+.TP 7n
+eval-expression
+Get one line from the user, and run it.
+Useful for testing expressions in
+\fBmg\fR
+startup files.
+.TP 7n
+exchange-point-and-mark
+Swap the values of "dot" and "mark" in the current window.
+Return an error if no mark is set.
+.TP 7n
+execute-extended-command
+Invoke an extended command; i.e. M-x.
+Call the message line routine to read in the command name and apply
+autocompletion to it.
+When it comes back, look the name up in the symbol table and run the
+command if it is found, passing arguments as necessary.
+Print an error if there is anything wrong.
+.TP 7n
+fill-paragraph
+Justify a paragraph, wrapping text at the current fill column.
+.TP 7n
+find-file
+Select a file for editing.
+First check if the file can be found
+in another buffer; if it is there, just switch to that buffer.
+If the file cannot be found, create a new buffer, read in the
+file from disk, and switch to the new buffer.
+.TP 7n
+find-file-read-only
+Same as find-file, except the new buffer is set to read-only.
+.TP 7n
+find-alternate-file
+Replace the current file with an alternate one.
+Semantics for finding the replacement file are the same as
+find-file, except the current buffer is killed before the switch.
+If the kill fails, or is aborted, revert to the original file.
+.TP 7n
+find-file-other-window
+Opens the specified file in a second buffer.
+Splits the current window if necessary.
+.TP 7n
+find-tag
+Jump to definition of tag at dot.
+.TP 7n
+forward-char
+Move cursor forwards (or backwards, if
+\fIn\fR
+is negative)
+\fIn\fR
+characters.
+Returns an error if the end of buffer is reached.
+.TP 7n
+forward-paragraph
+Move forward
+\fIn\fR
+paragraphs.
+Paragraphs are delimited by <NL><NL> or <NL><TAB> or <NL><SPACE>.
+.TP 7n
+forward-word
+Move the cursor forward by the specified number of words.
+.TP 7n
+global-set-key
+Bind a key in the global (fundamental) key map.
+.TP 7n
+global-unset-key
+Unbind a key from the global (fundamental) key map; i.e. set it to 'rescan'.
+.TP 7n
+global-wd-mode
+Toggle global working-directory mode.
+When enabled,
+\fBmg\fR
+defaults to opening files (and executing commands like compile and grep)
+relative to the global working directory.
+When disabled, a working directory is set for each buffer.
+.TP 7n
+goto-line
+Go to a specific line.
+If an argument is present, then
+it is the line number, else prompt for a line number to use.
+.TP 7n
+help-help
+Prompts for one of (a)propos, (b)indings, des(c)ribe key briefly.
+.TP 7n
+insert
+.br
+Insert a string, mainly for use from macros.
+.TP 7n
+insert-buffer
+Insert the contents of another buffer at dot.
+.TP 7n
+insert-file
+Insert a file into the current buffer at dot.
+.TP 7n
+insert-with-wrap
+Insert the bound character with word wrap.
+Check to see if we're past the fill column, and if so,
+justify this line.
+.TP 7n
+isearch-backward
+Use incremental searching, initially in the reverse direction.
+isearch ignores any explicit arguments.
+If invoked during macro definition or evaluation, the non-incremental
+search-backward is invoked instead.
+.TP 7n
+isearch-forward
+Use incremental searching, initially in the forward direction.
+isearch ignores any explicit arguments.
+If invoked during macro definition or evaluation, the non-incremental
+search-forward is invoked instead.
+.TP 7n
+join-line
+Join the current line to the previous.
+If called with an argument,
+join the next line to the current one.
+.TP 7n
+just-one-space
+Delete any whitespace around dot, then insert a space.
+.TP 7n
+keyboard-quit
+Abort the current action.
+.TP 7n
+kill-buffer
+Dispose of a buffer, by name.
+If the buffer name does not start and end with an asterisk,
+prompt the user if the buffer
+has been changed.
+.TP 7n
+kill-line
+Kill line.
+If called without an argument, it kills from dot to the end
+of the line, unless it is at the end of the line, when it kills the
+newline.
+If called with an argument of 0, it kills from the start of the
+line to dot.
+If called with a positive argument, it kills from dot
+forward over that number of newlines.
+If called with a negative argument
+it kills any text before dot on the current line, then it kills back
+abs(n) lines.
+.TP 7n
+kill-paragraph
+Delete
+\fIn\fR
+paragraphs starting with the current one.
+.TP 7n
+kill-region
+Kill the currently defined region.
+.TP 7n
+kill-word
+Delete forward
+\fIn\fR
+words.
+.TP 7n
+leave-tmpdir-backups
+Modifies the behaviour of backup-to-home-directory.
+Backup files that would normally reside in
+\fI/tmp\fR
+are left there and not moved to the
+\fI~/.mg.d\fR
+directory.
+.TP 7n
+line-number-mode
+Toggle whether the line number is displayed in the modeline.
+.TP 7n
+list-buffers
+Display the list of available buffers.
+.TP 7n
+load
+Prompt the user for a filename, and then execute commands
+from that file.
+.TP 7n
+local-set-key
+Bind a key mapping in the local (topmost) mode.
+.TP 7n
+local-unset-key
+Unbind a key mapping in the local (topmost) mode.
+.TP 7n
+make-backup-files
+Toggle generation of backup files.
+.TP 7n
+make-directory
+Prompt the user for a path or directory name which is then created.
+.TP 7n
+mark-paragraph
+Mark
+\fIn\fR
+paragraphs.
+.TP 7n
+mark-whole-buffer
+Marks whole buffer as a region by putting dot at the beginning and mark
+at the end of buffer.
+.TP 7n
+meta-key-mode
+When disabled, the meta key can be used to insert extended-ascii (8-bit)
+characters.
+When enabled, the meta key acts as usual.
+.TP 7n
+negative-argument
+Process a negative argument for keyboard-invoked functions.
+.TP 7n
+newline
+Insert a newline into the current buffer.
+.TP 7n
+newline-and-indent
+Insert a newline, then enough tabs and spaces to duplicate the indentation
+of the previous line.
+Assumes tabs are every eight characters.
+.TP 7n
+next-line
+Move forward
+\fIn\fR
+lines.
+.TP 7n
+not-modified
+Turn off the modified flag in the current buffer.
+.TP 7n
+open-line
+Open up some blank space.
+Essentially, insert
+\fIn\fR
+newlines, then back up over them.
+.TP 7n
+other-window
+The command to make the next (down the screen) window the current
+window.
+There are no real errors, although the command does nothing if
+there is only 1 window on the screen.
+.TP 7n
+overwrite-mode
+Toggle overwrite mode in the current buffer,
+where typing overwrites existing characters rather than inserting them.
+Can be set globally with set-default-mode.
+.TP 7n
+prefix-region
+Inserts a prefix string before each line of a region.
+The prefix string is settable by using 'set-prefix-string'.
+.TP 7n
+previous-line
+Move backwards
+\fIn\fR
+lines.
+.TP 7n
+previous-window
+This command makes the previous (up the screen) window the
+current window.
+There are no errors, although the command does not do
+a lot if there is only 1 window.
+.TP 7n
+pop-tag-mark
+Return to position where find-tag was previously invoked.
+.TP 7n
+push-shell
+Suspend
+\fBmg\fR
+and switch to alternate screen, if available.
+.TP 7n
+pwd
+Display current (global) working directory in the status area.
+.TP 7n
+query-replace
+Query Replace.
+Search and replace strings selectively, prompting after each match.
+.TP 7n
+replace-string
+Replace string globally without individual prompting.
+.TP 7n
+query-replace-regexp
+Replace strings selectively.
+Does a search and replace operation using regular
+expressions for both patterns.
+.TP 7n
+quoted-insert
+Insert the next character verbatim into the current buffer; i.e. ignore
+any function bound to that key.
+.TP 7n
+re-search-again
+Perform a regular expression search again, using the same search
+string and direction as the last search command.
+.TP 7n
+re-search-backward
+Search backwards using a regular expression.
+Get a search string from the user, and search, starting at dot
+and proceeding toward the front of the buffer.
+If found, dot is left
+pointing at the first character of the pattern [the last character that
+was matched].
+.TP 7n
+re-search-forward
+Search forward using a regular expression.
+Get a search string from the user and search for it starting at dot.
+If found, move dot to just after the matched characters.
+display does all
+the hard stuff.
+If not found, it just prints a message.
+.TP 7n
+recenter
+Reposition dot in the current window.
+By default, the dot is centered.
+If given a positive argument (n), the display is repositioned to line
+n.
+If
+\fIn\fR
+is negative, it is that line from the bottom.
+.TP 7n
+redraw-display
+Refresh the display.
+Recomputes all window sizes in case something has changed.
+.TP 7n
+revert-buffer
+Revert the current buffer to the latest file on disk.
+.TP 7n
+save-buffer
+Save the contents of the current buffer if it has been changed,
+optionally creating a backup copy.
+.TP 7n
+save-buffers-kill-emacs
+Offer to save modified buffers and quit
+\fBmg\fR.
+.TP 7n
+save-some-buffers
+Look through the list of buffers, offering to save any buffer that
+has been changed.
+Buffers that are not associated with files (such
+as *scratch*, *grep*, *compile*) are ignored.
+.TP 7n
+scroll-down
+Scroll backwards
+\fIn\fR
+pages.
+A two-line overlap between pages is
+assumed.
+If given a repeat argument, scrolls back lines, not pages.
+.TP 7n
+scroll-one-line-down
+Scroll the display down
+\fIn\fR
+lines without changing the cursor position.
+.TP 7n
+scroll-one-line-up
+Scroll the display
+\fIn\fR
+lines up without moving the cursor position.
+.TP 7n
+scroll-other-window
+Scroll the next window in the window list window forward
+\fIn\fR
+pages.
+.TP 7n
+scroll-up
+Scroll forward one page.
+A two-line overlap between pages is
+assumed.
+If given a repeat argument, scrolls back lines, not pages.
+.TP 7n
+search-again
+Search again, using the same search string and direction as the last
+search command.
+.TP 7n
+search-backward
+Reverse search.
+Get a search string from the user, and search, starting
+at dot and proceeding toward the front of the buffer.
+If found, dot is
+left pointing at the first character of the pattern (the last character
+that was matched).
+.TP 7n
+search-forward
+Search forward.
+Get a search string from the user, and search for it
+starting at dot.
+If found, dot gets moved to just after the matched
+characters, if not found, print a message.
+.TP 7n
+self-insert-command
+Insert a character.
+.TP 7n
+sentence-end-double-space
+Toggle double or single spaces for end of sentences.
+Double is the default.
+Currently only affects fill-paragraph.
+.TP 7n
+set-case-fold-search
+Set case-fold searching, causing case not to matter
+in regular expression searches.
+This is the default.
+.TP 7n
+set-default-mode
+Append the supplied mode to the list of default modes
+used by subsequent buffer creation.
+Built in modes include: fill, indent and overwrite.
+.TP 7n
+set-fill-column
+Prompt the user for a fill column.
+Used by auto-fill-mode.
+.TP 7n
+set-mark-command
+Sets the mark in the current window to the current dot location.
+.TP 7n
+set-prefix-string
+Sets the prefix string to be used by the 'prefix-region' command.
+.TP 7n
+shell-command
+Execute external command from mini-buffer.
+.TP 7n
+shell-command-on-region
+Provide the text in region to the shell command as input.
+.TP 7n
+shrink-window
+Shrink current window by one line.
+The window immediately below is expanded to pick up the slack.
+If only one window is present, this command has no effect.
+.TP 7n
+split-window-vertically
+Split the current window.
+A window smaller than 3 lines cannot be split.
+.TP 7n
+start-kbd-macro
+Start defining a keyboard macro.
+Macro definition is ended by invoking end-kbd-macro.
+.TP 7n
+suspend-emacs
+Suspend
+\fBmg\fR
+and switch back to alternate screen, if in use.
+.TP 7n
+switch-to-buffer
+Prompt and switch to a new buffer in the current window.
+.TP 7n
+switch-to-buffer-other-window
+Switch to buffer in another window.
+.TP 7n
+toggle-read-only
+Toggle the read-only flag on the current buffer.
+.TP 7n
+transpose-chars
+Transpose the two characters in front of and under dot,
+then move forward one character.
+Treat newline characters the same as any other.
+.TP 7n
+transpose-paragraphs
+Transpose adjacent paragraphs.
+If multiple iterations are requested, the current paragraph will
+be moved
+\fIn\fR
+paragraphs forward.
+.TP 7n
+transpose-words
+Transpose adjacent words.
+.TP 7n
+undo
+Undo the most recent action.
+If invoked again without an intervening command,
+move the undo pointer to the previous action and undo it.
+.TP 7n
+undo-boundary
+Add an undo boundary.
+This is not usually done interactively.
+.TP 7n
+undo-boundary-toggle
+Toggle whether undo boundaries are generated.
+Undo boundaries are often disabled before operations that should
+be considered atomically undoable.
+.TP 7n
+undo-enable
+Toggle whether undo information is kept.
+.TP 7n
+undo-list
+Show the undo records for the current buffer in a new buffer.
+.TP 7n
+universal-argument
+Repeat the next command 4 times.
+Usually bound to C-u.
+This command may be stacked; e.g.\&
+C-u C-u C-f moves the cursor forward 16 characters.
+.TP 7n
+upcase-region
+Upper case region.
+Change all of the lower case characters in the region to
+upper case.
+.TP 7n
+upcase-word
+Move the cursor forward by the specified number of words.
+As it moves, convert any characters to upper case.
+.TP 7n
+visible-bell
+Toggle the visible bell.
+If this toggle is on, the modeline will flash.
+.TP 7n
+visit-tags-table
+Record name of the tags file to be used for subsequent find-tag.
+.TP 7n
+what-cursor-position
+Display a bunch of useful information about the current location of
+dot.
+The character under the cursor (in octal), the current line, row,
+and column, and approximate position of the cursor in the file (as a
+percentage) is displayed.
+The column position assumes an infinite
+position display; it does not truncate just because the screen does.
+.TP 7n
+write-file
+Ask for a file name and write the contents of the current buffer to
+that file.
+Update the remembered file name and clear the buffer
+changed flag.
+.TP 7n
+yank
+Yank text from kill-buffer.
+Unlike emacs, the
+\fBmg\fR
+kill buffer consists only
+of the most recent kill.
+It is not a ring.
+.SH "MG DIRED KEY BINDINGS"
+Specific key bindings are available in dired mode.
+.PP
+.RS 6n
+.PD 0
+.TP 20n
+DEL
+dired-unmark-backward
+.TP 20n
+RET, e, f and C-m
+dired-find-file
+.TP 20n
+SPC
+dired-next-line
+.TP 20n
+!
+dired-shell-command
+.TP 20n
++
+dired-create-directory
+.TP 20n
+a
+dired-find-alternate-file
+.TP 20n
+c
+dired-do-copy
+.TP 20n
+d and C-d
+dired-flag-file-deletion
+.TP 20n
+g
+dired-revert
+.TP 20n
+n
+dired-next-line
+.TP 20n
+o
+dired-find-file-other-window
+.TP 20n
+p
+dired-previous-line
+.TP 20n
+q
+quit-window
+.TP 20n
+r
+dired-do-rename
+.TP 20n
+u
+dired-unmark
+.TP 20n
+x
+dired-do-flagged-delete
+.TP 20n
+C-v
+dired-scroll-down
+.TP 20n
+M-v
+dired-scroll-up
+.RE
+.PD
+.SH "MG DIRED COMMANDS"
+The following are a list of the commands specific to dired mode:
+.TP 8n
+dired-create-directory
+Create a directory.
+.TP 8n
+dired-do-copy
+Copy the file listed on the current line of the dired buffer.
+.TP 8n
+dired-do-flagged-delete
+Delete the files that have been flagged for deletion.
+.TP 8n
+dired-do-rename
+Rename the file listed on the current line of the dired buffer.
+.TP 8n
+dired-find-alternate-file
+Replace the current dired buffer with an alternate one as specified
+by the position of the cursor in the dired buffer.
+.TP 8n
+dired-find-file
+Open the file on the current line of the dired buffer.
+If the cursor is on a directory it will be opened in dired mode.
+.TP 8n
+dired-flag-file-deletion
+Flag the file listed on the current line for deletion.
+This is indicated in the buffer by putting a D at the left margin.
+No files are actually deleted until the function dired-do-flagged-delete
+is executed.
+.TP 8n
+dired-find-file-other-window
+Open the file on the current line of the dired buffer in a
+different window.
+.TP 8n
+dired-next-line
+Move the cursor to the next line.
+.TP 8n
+dired-other-window
+This function works just like dired, except that it puts the
+dired buffer in another window.
+.TP 8n
+dired-previous-line
+Move the cursor to the previous line.
+.TP 8n
+dired-revert
+Refresh the dired buffer.
+.TP 8n
+dired-scroll-down
+Scroll down the dired buffer.
+.TP 8n
+dired-scroll-up
+Scroll up the dired buffer.
+.TP 8n
+dired-unmark
+Remove the deletion flag for the file on the current line.
+.TP 8n
+dired-unmark-backward
+Remove the deletion flag from the file listed on the previous line
+of the dired buffer, then move up to that line.
+.TP 8n
+quit-window
+Close the current dired buffer.
+.SH "CONFIGURATION FILES"
+There are two configuration files,
+\fI.mg\fR
+and
+\fI.mg-TERM\fR.
+Here,
+\fRTERM\fR
+represents the name of the terminal type; e.g. if the terminal type
+is set to
+\(Lqvt100\(Rq,
+\fBmg\fR
+will use
+\fI.mg-vt100\fR
+as a startup file.
+The terminal type startup file is used first.
+.PP
+The startup file format is a list of commands, one per line, as used for
+interactive evaluation.
+Strings that are normally entered by the user at any subsequent prompts
+may be specified after the command name; e.g.:
+.nf
+.sp
+.RS 6n
+global-set-key ")" self-insert-command
+global-set-key "\e^x\e^f" find-file
+global-set-key "\ee[Z" backward-char
+set-default-mode fill
+set-fill-column 72
+auto-execute *.c c-mode
+.RE
+.fi
+.PP
+Comments can be added to the startup files by placing
+\(Lq\;\(Rq
+or
+\(Lq#\(Rq
+as the first character of a line.
+.SH "FILES"
+.TP 28n
+\fI~/.mg\fR
+normal startup file
+.PD 0
+.TP 28n
+\fI~/.mg-TERM\fR
+terminal-specific startup file
+.TP 28n
+\fI~/.mg.d\fR
+alternative backup file location
+.TP 28n
+\fI/usr/share/doc/mg/tutorial\fR
+concise tutorial
+.PD
+.SH "SEE ALSO"
+ctags(1),
+vi(1)
+.SH "CAVEATS"
+Since it is written completely in C, there is currently no
+language in which extensions can be written;
+however, keys can be rebound and certain parameters can be changed
+in startup files.
+.PP
+In order to use 8-bit characters (such as German umlauts), the Meta key
+needs to be disabled via the
+\(Lqmeta-key-mode\(Rq
+command.
+.PP
+Multi-byte character sets, such as UTF-8, are not supported.
